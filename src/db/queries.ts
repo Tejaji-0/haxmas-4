@@ -18,21 +18,22 @@ export function createFact(fact: string) {
     fact,
     rating: 0,
     createdAt,
-  }).run()
+  }).returning().get()
 
-  return { id: Number(res.lastInsertRowid) }
+  return { id: res.id }
 }
 
 export function rateFact(id: number, rating: number) {
   const res = db.update(facts)
     .set({ rating })
     .where(eq(facts.id, id))
-    .run()
+    .returning()
+    .get()
 
-  return { changes: res.changes }
+  return { changes: 1 }
 }
 
 export function deleteFact(id: number) {
-  const res = db.delete(facts).where(eq(facts.id, id)).run()
-  return { changes: res.changes }
+  db.delete(facts).where(eq(facts.id, id)).run()
+  return { changes: 1 }
 }
