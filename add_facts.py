@@ -1,7 +1,6 @@
 import requests
 import time
 
-# API endpoints
 USELESS_FACTS_API = "https://uselessfacts.jsph.pl/random.json"
 DEPLOYED_API = "https://fastdeploy.deployor.dev/u/ident!bWfa7N/haxmas-4/api/facts"
 
@@ -11,7 +10,6 @@ def get_existing_facts():
         response = requests.get(DEPLOYED_API)
         response.raise_for_status()
         facts = response.json()
-        # Return set of fact texts for quick lookup
         return {fact['fact'].lower().strip() for fact in facts}
     except Exception as e:
         print(f"Error fetching existing facts: {e}")
@@ -43,16 +41,15 @@ def add_fact_to_db(fact):
         return None
 
 def main():
-    print("🎲 Starting fact collection...")
+    print("Starting fact collection...")
     print(f"Target: {DEPLOYED_API}\n")
-    
-    # Get existing facts to avoid duplicates
+
     existing_facts = get_existing_facts()
-    print(f"📊 Found {len(existing_facts)} existing facts in database\n")
+    print(f"Found {len(existing_facts)} existing facts in database\n")
     
     added_count = 0
     skipped_count = 0
-    max_attempts = 50  # Try to add up to 50 unique facts
+    max_attempts = 50
     
     for i in range(max_attempts):
         print(f"[{i+1}/{max_attempts}] Fetching random fact...", end=" ")
@@ -63,11 +60,11 @@ def main():
             print("❌ Failed to fetch")
             continue
         
-        # Check for duplicates (case-insensitive)
+
         if fact.lower().strip() in existing_facts:
             print(f"⏭️  Duplicate: {fact[:60]}...")
             skipped_count += 1
-            time.sleep(0.5)  # Short delay to avoid rate limiting
+            time.sleep(0.5)
             continue
         
         # Add new fact
@@ -79,8 +76,7 @@ def main():
             added_count += 1
         else:
             print(f"❌ Failed to add")
-        
-        # Delay to avoid rate limiting
+
         time.sleep(1)
     
     print(f"\n{'='*60}")
